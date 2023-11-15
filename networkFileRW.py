@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-#networkFileRW.py
-#Pamela Brauda
-#Thursday, March 3, 2022
+#Devin Osborn - GPA 8.py
+#Devin Osborn
+#Nov 7th, 2023
 #Update routers and switches;
 #read equipment from a file, write updates & errors to file
 
 ##---->>>> Use a try/except clause to import the JSON module
-
-
+try:
+    import json
+except ImportError:
+    print("Error: The JSON module is not available.")
 
 ##---->>>> Create file constants for the file names; file constants can be reused
 ##         There are 2 files to read this program: equip_r.txt and equip_s.txt
 ##         There are 2 files to write in this program: updated.txt and errors.txt
       
-
-
+EQUIP_R_TXT = "equip_r.txt"
+EQUIP_S_TXT = "equip_s.txt"
+UPDATED_TXT = "updated.txt"
+ERRORS_TXT = "errors.txt"
 
 
 #prompt constants
@@ -61,18 +65,23 @@ def main():
 
     ##---->>>> open files here
 
-
-
-    
     #dictionaries
     ##---->>>> read the routers and addresses into the router dictionary
-
-    routers = {}
+    try:
+        with open(EQUIP_R_TXT, 'r') as file_r:
+            routers = json.load(file_r)
+    except FileNotFoundError:
+        print(f"Error: {EQUIP_R_TXT} not found.")
+        routers = {}
 
 
     ##---->>>> read the switches and addresses into the switches dictionary
-
-    switches = {}
+    try:
+        with open(EQUIP_S_TXT, 'r') as file_s:
+            switches = json.load(file_s)
+    except FileNotFoundError:
+        print(f"Error: {EQUIP_S_TXT} not found.")
+        switches = {}
 
 
     #the updated dictionary holds the device name and new ip address
@@ -131,16 +140,21 @@ def main():
     print("Number of devices updated:", devicesUpdatedCount)
 
     ##---->>>> write the updated equipment dictionary to a file
+    try:
+        with open(UPDATED_TXT, 'w') as file_updated:
+            json.dump(updated, file_updated, indent=2)
+    except Exception as e:
+        print(f"Error writing to {UPDATED_TXT}: {e}")
 
-    
-    print("Updated equipment written to file 'updated.txt'")
-    print()
-    print("\nNumber of invalid addresses attempted:", invalidIPCount)
+    print("Number of invalid addresses attempted:", invalidIPCount)
 
     ##---->>>> write the list of invalid addresses to a file
-    
-
-    print("List of invalid addresses written to file 'errors.txt'")
+    try:
+        with open(ERRORS_TXT, 'w') as file_errors:
+            for address in invalidIPAddresses:
+                file_errors.write(address + '\n')
+    except Exception as e:
+        print(f"Error writing to {ERRORS_TXT}: {e}")
 
 #top-level scope check
 if __name__ == "__main__":
